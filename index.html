@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>書籍出版 Proposal</title>
+    <style>
+        /* 基本重置與全域設定 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body, html {
+            font-family: "PingFang TC", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fcfcfc;
+            scroll-behavior: smooth; /* 平滑滾動 */
+        }
+
+        /* 封面畫面 (Intro Screen) */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        #intro-screen h1 {
+            font-size: 3rem;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        .enter-btn {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            background-color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .enter-btn:hover {
+            background-color: #e0e0e0;
+            transform: scale(1.05);
+        }
+
+        /* 主要內容區塊 */
+        #main-content {
+            display: none; /* 初始隱藏，靠JS切換 */
+            opacity: 0;
+            transition: opacity 1s ease;
+            padding-top: 60px; /* 為了固定標頭留空間 */
+        }
+
+        /* 固定頂部標頭 */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+
+        /* 左上角漢堡選單按鈕 */
+        .menu-toggle {
+            position: absolute;
+            left: 20px;
+            top: 15px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1001;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: #2c3e50;
+            transition: 0.3s;
+        }
+
+        /* 側邊欄選單 */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100vh;
+            background-color: #2c3e50;
+            padding-top: 80px;
+            transition: left 0.3s ease;
+            z-index: 999;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        #sidebar.active {
+            left: 0;
+        }
+
+        #sidebar a {
+            display: block;
+            padding: 15px 25px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: background-color 0.2s;
+        }
+
+        #sidebar a:hover {
+            background-color: #34495e;
+        }
+
+        /* 內容區塊排版 */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        section {
+            min-height: 80vh; /* 確保下滑時有足夠的區塊高度 */
+            padding: 60px 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        section h2 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+
+        section p {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        /* 手機版適應 */
+        @media (max-width: 768px) {
+            #intro-screen h1 { font-size: 2.2rem; }
+            section { min-height: auto; padding: 40px 10px; }
+            section h2 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 進入畫面 -->
+    <div id="intro-screen">
+        <h1>Proposal</h1>
+        <button class="enter-btn" onclick="enterSite()">點擊進入</button>
+    </div>
+
+    <!-- 主要企劃書內容 -->
+    <div id="main-content">
+        <!-- 頂部標頭與選單按鈕 -->
+        <header>
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <h1>書籍出版proposal</h1>
+        </header>
+
+        <!-- 側邊導覽列 -->
+        <nav id="sidebar">
+            <a href="#introduction" onclick="toggleMenu()">引言</a>
+            <a href="#current-situation" onclick="toggleMenu()">現況與問題</a>
+            <a href="#story" onclick="toggleMenu()">故事方向</a>
+            <a href="#audience" onclick="toggleMenu()">受眾群體</a>
+            <a href="#goals" onclick="toggleMenu()">未來目標</a>
+            <a href="#budget" onclick="toggleMenu()">期望預算</a>
+            <a href="#authors" onclick="toggleMenu()">作者群</a>
+        </nav>
+
+        <!-- 各個章節 -->
+        <div class="container">
+                        <section id="introduction">
+                <h2>引言</h2>
+                <p>中華文化之所以能跨越數千年而不斷，靠的不只是典籍與教條，更是一代又一代人對古老智慧的體會與詮釋。我們有幸找到對傳統學問懷有熱情的夥伴，在各自的學習與生活中逐漸感受到經典並非遙不可及的古董，反而是仍然能回應當代問題的思想資源。</p>
+                <br>
+                <p>我們深信，《易經》的核心不僅止於命理或占卜，它更是一套關於「變動」的哲學。當下的世界瞬息萬變，個體在職場、生活與自我認同之間面臨的諸多困境，與幾千年前古人所面對的抉擇，本質上並無二致。我們這支創作團隊正是希望將這份歷經千年而不衰的洞見，從註疏與考據中解放出來。</p>
+                <br>
+                <p>這部作品將打破傳統學術著作的藩籬，以散文小說的形式，輔以「繪本式」的視覺敘事。我們打算選取六十四卦中的關鍵語境，將抽象的象徵轉化為現代人的生命切片與故事場景。每一卦的哲理，將與書中角色的情緒起伏與行動決策融合，讓讀者在閱讀故事的過程中，無意間領略到古人對待「進退、盈虛、取捨」的姿態。</p>
+                <br>
+                <p>透過文字與圖像的結合，我們期望將《易經》拉回「人」的層次。對於年輕讀者而言，這不應是一部需要仰視的經典，合該是一本可以隨手翻閱、在迷惘時能提供些許啟發的案頭書。我們期望把這份文化瑰寶，傳遞給更多和我們一樣曾經覺得它遙不可及的人。
+</p>
+            </section>
+
+
+                        <section id="current-situation">
+                <h2>現況與挑戰</h2>
+                <p>在啟動此項計畫之初，我們曾寄望於透過政府主導的【初創作家出版資助計劃】來完成這場文化實踐。我們組建了一支充滿熱忱與跨領域執行力的團隊，從文案、視覺設計到出版對接，皆已進入備戰狀態。然而，在深入調研該項目的歷年執行機制與審核風向後，我們發現了兩項關鍵性的落差：</p>
+                <br>
+                <p>首先，是資源的不可預期性與定位差異。歷屆相關補助計畫的導向，多半鎖定於 3 至 5 歲的兒童繪本市場，這雖是極佳的教育切入點，卻與我們期望開發的「青少年-成年讀者」、「文學敘事」及「現代生活啟發」的核心定位截然不同。我們致力於探討的是存在於現代職場、情感與人際之間的易學，若強行扭曲為低幼題材，勢必犧牲了這份厚重經典的核心哲思。此外，面對當前計畫推行上的變數，我們意識到，與其被動等待行政流程的安排，不如主動尋找更具前瞻視野、更理解內容出版價值與社會對話潛力的投資夥伴。</p>
+                <br>
+                <p>其次，是出版流程的實質推進。儘管目前計畫面臨政府資源配置的挑戰，但團隊的核心創作能量並未中斷。我們已完成了故事雛形的核心構建，並在出版界前輩的牽線下，成功對接了願意共同打磨作品、具備豐富市場發行經驗的合作出版社（Port Journal）。我們目前處於一個關鍵的節點：所有的創作內容、形式架構與發行藍圖皆已完備，唯獨缺乏能讓這項文化工程穩健落地、轉化為高品質成書的資金支持。我們渴望找到的不僅是單純的投資者，更是能認同這項文化敘事價值的長期戰略夥伴。</p>
+                <br>
+                <p>最後，我們深知以年輕創作者之姿詮釋《易經》，是一場既狂野又充滿敬畏的冒險。團隊深切明白，易學之奧義博大精深，非數年功力所能盡窺。因此，我們保持著極高的開放度與自我審視能力，特別是團隊的主創成員梁參書，深知個人在古典訓詁與哲學底蘊上的不足。我們公開且誠摯地邀請各領域的學者、宗教界前輩或文化界先進給予指教。我們深信，好的作品是在不斷的修正與碰撞中淬鍊出來的，若閣下能撥冗提供專業的宗教見解與教誨，將會成為本專案最珍貴的支柱，確保我們在創新演繹的過程中，始終能守住經典之正脈與精神底蘊。</p>
+            </section>
+
+
+            <section id="story">
+                <h2>故事方向</h2>
+                <p>待增</p>
+            </section>
+
+                      <section id="audience">
+                <h2>受眾群體</h2>
+                <p>本計畫致力於打破傳統哲學典籍的受眾限制，將核心目標市場鎖定於具備泛 ACG（動畫、漫畫、遊戲）文化接觸經驗的大眾青少年群體。</p>
+                <p>根據市場觀察與團隊過去的實戰經驗（如 TRPG 劇本與網路文學連載），我們將這塊高潛力市場的受眾描繪如下：</p>
+                
+                <!-- 分析點 1 -->
+                <div style="margin-top: 30px;">
+                    <h3 style="font-size: 1.3rem; color: #3498db; margin-bottom: 10px;">1. 核心年齡層：6 至 30 歲的新世代受眾</h3>
+                    <p>（涵蓋中小學生、大學生及青年上班族）</p>
+                    <p style="margin-top: 10px;">這是一個從小伴隨網路、視覺圖像與多媒體敘事成長的世代。他們或許對傳統的「經文說教」感到抗拒，但對於具備「宏大世界觀」、「角色驅動」以及「神秘學」的故事卻有著極高的接受度與狂熱。這正是本團隊將《易經》六十四卦轉化為散文小說＋繪本的考量。</p>
+                </div>
+                
+                <!-- 分析點 2 -->
+                <div style="margin-top: 30px;">
+                    <h3 style="font-size: 1.3rem; color: #3498db; margin-bottom: 10px;">2. 受眾特質與消費行為分析：</h3>
+                    <p><strong>• 對「高顏值」與「視覺敘事」的買單能力：</strong><br>
+                    ACG 群體高度重視作品的視覺表現。憑藉團隊中概念藝術家（蒙希）的頂尖視覺統籌，我們能以媲美遊戲原畫的高規格插畫，直接吸引這群習慣看圖入坑的讀者，將他們原本投注於動漫周邊的消費力，成功轉移至這部具備收藏價值的文化繪本上。（例如《明日方舟》、《重返未來：1999》、《鳴潮》、《邊獄公司》都是成功的作品）</p>
+                    <br>
+                    <p><strong>• 熱衷「解謎」與「沉浸式體驗」：</strong><br>
+                    這群受眾（特別是熱衷 TRPG 與深度遊戲的玩家）非常習慣在龐大的設定中尋找線索與隱喻。我們將《易經》深奧的陰陽變化與卦象哲理，轉譯為故事中的伏筆與角色抉擇，恰好滿足了他們對於「燒腦」、「解構世界觀」的閱讀樂趣。</p>
+                </div>
+                
+                <!-- 分析點 3 -->
+                <div style="margin-top: 30px;">
+                    <h3 style="font-size: 1.3rem; color: #3498db; margin-bottom: 10px;">3. 破圈效應：從次文化輻射至大眾市場</h3>
+                    <p>雖然我們以 ACG 群體作為核心的切入點，但透過高質感的實體出版物與深入淺出的現代文學筆觸，這部作品同樣能吸引對「中國傳統文化」、「心靈成長」以及「精美插畫繪本」感興趣的廣大一般讀者。我們期望以 ACG 群體強大的社群擴散力與口碑傳播特性，帶動整體書籍的市場聲量，最終達到「傳統文化年輕化、普及化」的終極目標。</p>
+                </div>
+            </section>
+
+
+                        <section id="goals">
+                <h2>未來目標</h2>
+                <p style="font-size: 1.2rem; font-weight: bold; color: #2c3e50; margin-bottom: 20px;">立足經典，開創全新文化浪潮</p>
+                
+                <!-- 短期目標 -->
+                <div style="margin-top: 30px;">
+                    <h3 style="font-size: 1.3rem; color: #3498db; margin-bottom: 10px;">1. 短期目標：</h3>
+                    <p>我們期望採用香港傳統文史哲學界前所未見的推廣策略，以「泛 ACG 視覺美學」與「現代小說敘事」作為敲門磚，為《易經》、香港道教科儀乃至整體華夏傳統文化，打下青年受眾基礎。</p>
+                    <p style="margin-top: 10px;">我們的首要任務是徹底洗刷傳統經典「老土」、「艱澀」、「說教」的刻板印象。透過視覺包裝與引人入勝的情節設計，我們要讓年輕世代在接觸這些文化底蘊時，產生「酷（型）」、「具備吸引力」的直觀感受，使其自然而然地將傳統經典視為日常流行文化享受、甚至社群討論焦點的一部分。</p>
+                </div>
+                
+                <!-- 長期目標 -->
+                <div style="margin-top: 30px;">
+                    <h3 style="font-size: 1.3rem; color: #3498db; margin-bottom: 10px;">2. 長期目標：</h3>
+                    <p>《易經》的系統與道教文化中蘊含著龐大且深邃的世界觀，這些都是極具發掘價值的敘事元素。因此本計畫從故事設計之初，便預留了極大的橫向與縱向延展性。</p>
+                    <p style="margin-top: 10px;">當本次的散文小說獲得市場驗證後，這套將古典哲理轉譯為現代青年娛樂的成功經驗與受眾，將能支援團隊未來對其他傳統文化（如諸子百家、神話傳說、在地科儀等）的推廣。我們期望將單一出版物，逐步昇華為一個具備持續生命力的文化 IP 品牌。</p>
+                </div>
+                
+                <!-- 核心願景 (強調視覺區塊) -->
+                <div style="margin-top: 40px; padding: 25px; background-color: #fdfaf2; border-left: 4px solid #f39c12; border-radius: 4px;">
+                    <h3 style="font-size: 1.3rem; color: #d35400; margin-bottom: 15px;">【核心願景】</h3>
+                    <p>除了具體的出版目標，本團隊更抱持著深刻的文化使命感。我們期望這個專案能發揮強大的帶頭領航作用，向業界與投資方證明：傳統文化的傳承，絕非只有一種死板的路徑。</p>
+                    <br>
+                    <p>近年來，內地蓬勃發展的「國潮」（National Trend）雖然成功帶動了傳統文化的復興，但本計畫期望探索出另一種可能性。同樣立足於深厚的華夏文化根基，我們將結合香港獨有的多元交融視角、現代設計語彙，以及對青年次文化的敏銳嗅覺，走出一條與現行「國潮」截然不同、具備強烈在地特色與國際審美的文化表達形式。</p>
+                </div>
+            </section>
+
+
+                        <section id="budget">
+                <h2>期望預算</h2>
+                <h3 style="font-size: 1.3rem; color: #2c3e50; margin-bottom: 15px;">財務規劃與合作展望</h3>
+                
+                <p>關於本計畫的整體預算配置與資金需求，我們深知每一位投資方或合作夥伴對於專案的注資模式、資源挹注方式及預期效益皆有不同的考量。因此，關於確切的預算規模與合作方案，團隊非常期盼能與 貴道觀安排進一步的會議，透過面對面的交流，共同探討出最契合雙方願景且互利共贏的合作。</p>
+                <br>
+                
+                <p>為展現本團隊的執行誠意與財務透明度，我們已針對整項出版計畫的各個執行階段（涵蓋文本開發、視覺美術繪製、版面設計排版、以及初期的市場推廣等）進行了務實的基礎成本估算。</p>
+                <br>
+                
+                <p>以下附上我方團隊初步擬定的【專案內部成本試算表】，懇請 閣下先行審閱，並將此作為我們未來進一步評估與商榷合作細節的基礎參考：</p>
+                
+                <!-- 試算表連結特別視覺區塊 -->
+                <div style="margin: 25px 0; padding: 20px; background-color: #f4f6f7; border-left: 4px solid #3498db; border-radius: 4px;">
+                    <p style="margin-bottom: 12px; font-weight: bold; color: #2c3e50;">🔗 計畫成本試算表連結：</p>
+                    <a href="https://docs.google.com/spreadsheets/d/1rD3v4__WvvYVQk9mHrMli_Mkxrno_IwW/edit?usp=drivesdk&ouid=102968465682706871412&rtpof=true&sd=true" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; transition: background-color 0.3s;">
+                        點此開啟 Google 試算表
+                    </a>
+                </div>
+                
+                <p>我們隨時準備好針對表格內的各項細節與 閣下進行詳細報告與討論。再次感謝您撥冗閱讀本企劃，期待能有機會與您攜手，共同完成這項別具意義的文化出版工程。</p>
+            </section>
+
+
+                                   <section id="authors">
+                <h2>作者群</h2>
+                
+                <div class="author-profile" style="margin-top: 20px; margin-bottom: 40px; border-bottom: 1px dashed #eaeaea; padding-bottom: 30px;">
+                    <h3 style="font-size: 1.4rem; color: #2c3e50; margin-bottom: 15px;">張洛寅 | 專案發起人 暨 故事設計統籌</h3>
+                    <p><strong>學歷背景：</strong>香港樹仁大學中文學系學士。</p>
+                    <br>
+                    <p><strong>專業職務：</strong><br>
+                    • 香港考古學會 青年理事<br>
+                    • 新亞文商基金轄下 新亞研究所 東南亞資料櫃整理者</p>
+                    <br>
+                    <p><strong>學術成就與文史經驗：</strong>長年服務於香港文史哲學界，具備扎實的古典文獻考究與學術梳理能力，論文散見於各大專業學術期刊。</p>
+                    <br>
+                    <p><strong>獲獎紀錄：</strong>以《陶瓷上的演義小說故事—清末民國磁州窯系演義小說題材瓷器藝術特色初探》一文，榮獲香港教育大學第九屆人文學術研討會「論文推薦獎」。</p>
+                    <br>
+                    <p><strong>核心價值 (故事設計)：</strong>擅長從傳統載體（如陶瓷器物、古典經文）中提煉敘事元素。</p>
+                </div>
+                
+                <div class="author-profile">
+                    <h3 style="font-size: 1.4rem; color: #2c3e50; margin-bottom: 15px;">蒙希 | 主筆繪畫 暨 視覺藝術指導</h3>
+                    <p><strong>專業背景：</strong>多倫多藝術學院概念設計畢業，專注於透過視覺敘事傳遞深層敘事意涵。</p>
+                    <br>
+                    <p><strong>實戰經驗：</strong>深耕商業插畫領域六年。自高中時期即投入接案實務，積累了跨領域的創作經驗，具備從草圖到完稿的完整生產流程管理能力。</p>
+                    <br>
+                    <p><strong>社交媒體營運：</strong>具備成熟的個人原創經營經驗，擅長於平台建立影響力。作為一名在職的獨立兼職插畫師，不僅能維持高品質的創作產出，更擁有敏銳的市場意識與專案執行力。</p>
+                    <br>
+                    <p><strong>個人連結：</strong><a href="https://www.facebook.com/share/14hCffr165Q/" target="_blank" style="color: #3498db; text-decoration: none; font-weight: bold;">點此前往 Facebook 專頁查看作品</a></p>
+                </div>
+                
+                                <!-- 主筆作家：參書 -->
+                <div class="author-profile" style="margin-top: 40px; padding-top: 30px; border-top: 1px dashed #eaeaea;">
+                    <h3 style="font-size: 1.4rem; color: #2c3e50; margin-bottom: 15px;">參書 | 主筆作家 暨 企劃文案統籌</h3>
+                    
+                    <p><strong>專案職責：</strong><br>
+                    • 擔綱本次散文小說的劇情架構與核心文本撰寫。<br>
+                    • 主導本企劃案的對外溝通文本與網站文案視覺化呈現。</p>
+                    <br>
+                    
+                    <p><strong>創作經歷與實力：</strong><br>
+                    • <strong>多元出版與連載：</strong>具備實體散文出版經驗，並長期於網路媒體連載小說，深諳現代讀者的閱讀節奏。<br>
+                    • <strong>高適應性寫作：</strong>以承接商業文字委託為主要實務經驗，擅長處理多線敘事、角色深度互動及打破常規的文學技法，具備文本客製化與市場對接能力。</p>
+                    <br>
+                    
+                    <p><strong>專案核心價值：</strong><br>
+                    • <strong>市場雷達：</strong>身為團隊中最年輕的成員，能掌握 Z 世代的閱讀偏好與潮流語彙。<br>
+                    • <strong>文化與信仰的轉譯：</strong>具備相關宗教實踐經驗與中國文化底蘊，能為故事注入正統的哲學思考，促成本團隊與閣下（宗教前輩）搭起合作橋樑的牽線人。</p>
+                    <br>
+                    
+                    <p><strong>線上作品集：</strong><a href="https://famous-entrance-40b.notion.site/3148ccad18df806fbdf1e3215e36f74b?source=copy_link" target="_blank" style="color: #3498db; text-decoration: none; font-weight: bold;">點此前往 Notion 查看作品</a></p>
+                </div>
+                <div class="author-profile" style="margin-top: 40px; padding-top: 30px; border-top: 1px dashed #eaeaea;">
+                    <h3 style="font-size: 1.4rem; color: #2c3e50; margin-bottom: 15px;">白梅 | 行政統籌 暨 行銷推廣設計</h3>
+                    
+                    <p><strong>學歷背景：</strong><br>
+                    • 香港都會大學 創意廣告及媒體設計 學士<br>
+                    • HKU SPACE 新媒體與傳播 高級文憑</p>
+                    <br>
+                    
+                    <p><strong>專案職責：</strong><br>
+                    • 掌管計畫行政營運與出版進度協調。<br>
+                    • 主導專案市場調查、行銷策略擬定與推廣視覺設計。</p>
+                    <br>
+                    
+                    <p><strong>核心成就與實戰經驗：</strong><br>
+                    • <strong>青年次文化：</strong>具備實體劇本出版與商業發行經驗。其創作之 TRPG 劇本《Tarkov》於市面發售後擊中目標受眾，深受年輕玩家社群喜愛。<br>
+                    • <strong>跨媒材視覺傳達：</strong>擅長結合新媒體傳播理論與創意廣告設計，能將艱澀的文本轉化為具備高分享價值的視覺與行銷素材。</p>
+                    <br>
+                    
+                    <p><strong>專案核心價值：</strong><br>
+                    她是團隊中最了解如何把故事賣給年輕人的行銷。藉由她在新媒體與 TRPG 社群的成功經驗，能為本次的出版企劃建構出最接地氣的商業推廣模式。</p>
+                    <br>
+                    
+                    <p><strong>出版參考：</strong><a href="https://keres-missionary.booth.pm/items/6236701" target="_blank" style="color: #3498db; text-decoration: none; font-weight: bold;">點此前往 Booth 查看出版品</a></p>
+                </div>
+
+                
+                <!-- 若未來有其他作者，可以在這裡繼續往下複製類似的 <div> 區塊 -->
+                
+            </section>
+
+        </div>
+    </div>
+
+    <!-- 互動邏輯 -->
+    <script>
+        // 點擊進入網站的動畫邏輯
+        function enterSite() {
+            const intro = document.getElementById('intro-screen');
+            const main = document.getElementById('main-content');
+            
+            // 淡出封面
+            intro.style.opacity = '0';
+            intro.style.visibility = 'hidden';
+            
+            // 延遲後顯示主內容，達到平滑過渡
+            setTimeout(() => {
+                intro.style.display = 'none';
+                main.style.display = 'block';
+                // 觸發重繪以確保淡入效果生效
+                void main.offsetWidth; 
+                main.style.opacity = '1';
+            }, 800);
+        }
+
+        // 開關側邊選單
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+    </script>
+
+</body>
+</html>
